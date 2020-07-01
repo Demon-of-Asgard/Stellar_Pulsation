@@ -44,7 +44,7 @@ def build_star(params, outfname):
     print("\n PARAMS:")
     print(" ---------------------------------\n")
     for entity in params:
-        print(" > ",entity, ":", params[entity],"\n")
+        print(" > [",entity, ":", params[entity],"]\n")
     print("\n ---------------------------------\n")
 
     barP0 = params["barP0"]
