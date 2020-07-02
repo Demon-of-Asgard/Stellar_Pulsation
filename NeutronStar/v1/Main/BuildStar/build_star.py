@@ -49,7 +49,7 @@ def build_star(params, outfname):
 
     barP0 = params["barP0"]
 
-    deltar = 1.0e-4
+    deltar = 1.0e-2
     #initial values.
     barP = [barP0]
     barM = [0.0]
