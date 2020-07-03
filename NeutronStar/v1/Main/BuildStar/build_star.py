@@ -49,7 +49,7 @@ def build_star(params, outfname):
 
     barP0 = params["barP0"]
 
-    deltar = 1.0e-2
+    deltar = 1.0e0
     #initial values.
     barP = [barP0]
     barM = [0.0]
@@ -63,7 +63,7 @@ def build_star(params, outfname):
         barM_i = barM[i-1] + deltar*M_func(barP[i-1], barM[i-1], r[i-1], params)
         r_i = r[i-1] + deltar
 
-        if(barP_i >= 0.):
+        if(barP_i >= 1.0e-5):
             barP.append(barP_i)
             barM.append(barM_i)
             r.append(r_i)

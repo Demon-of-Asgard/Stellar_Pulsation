@@ -23,11 +23,11 @@ class params:
     R0 = 1.473  # [cm]
     Ms = 1.989e33  # [gm]
 
-    alpha_rl = 1.473
+    alpha_rl = 3.0*R0
     alpha_nrl = 1.0  # [cm]
-    gamma_rl = 4./3.
+    gamma_rl = 1.0
     gamma_nrl = 5./3.
-    barP0rl = 1.0e-14 #Dimensionless central preasure.
+    barP0rl = 1.0e-3 #Dimensionless central preasure.
     barP0nrl = 1.0e-6#""
 
     #---------------------------------------------------------------------
@@ -49,9 +49,9 @@ class params:
         alpha_rl = self.alpha_rl
         barP0_rl = self.barP0rl
 
-        Krl = (hbar*c/(12.*pi**2))*(3.0*pi**2*Z/(A*mn*c**2))**gamma_rl
-        e0_rl = ((R0/alpha_rl)**gamma_rl/Krl)**(1/(gamma_rl-1))
-        barKrl = Krl*e0_rl**(gamma_rl-1)
+        Krl = 1.0/3.0
+        e0_rl = 1.6e38
+        barKrl = 1.0/3.0
         beta_rl = 1.0e15*(4.0*pi*e0_rl)/(Ms*c**2*barKrl**(1/gamma_rl))
 
         params = {
