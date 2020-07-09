@@ -20,7 +20,7 @@ class Params:
         self.__gamma_rl = 4./3.
         self.__barM0 = 0.0
         self.__barP0 = 1.0e-14
-        self.__r0 = 1.0
+        self.__r0 = 0.000001
 
     #-------------------------------------------------------------
     def get_params(self):

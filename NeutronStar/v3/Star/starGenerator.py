@@ -2,8 +2,9 @@
 
 #-----------------------------------------------------------------------------------
 
-from EoS.eos import Eos as Eos
 import numpy as np
+from EoS.eos import Eos as Eos
+from Plot.plot import Plot as Plot
 
 #-----------------------------------------------------------------------------------
 
@@ -86,14 +87,19 @@ class NS(Eos):
         output = np.array([self.r,self.barM, self.barP])
         np.savetxt(outfname, output.T, fmt="%6.5e", delimiter="\t")
 
+        return outfname
+
 #-----------------------------------------------------------------------------------
 
 def main():
     star_obj = NS()
     star_obj.print_params()
     print("--------------------------------------------------\n")
-    star_obj.build()
+    outfanme = star_obj.build()
     print("--------------------------------------------------\n")
+    plot_obj = Plot()
+    plot_obj.plot(outfanme)
+
 
 #-----------------------------------------------------------------------------------
 
