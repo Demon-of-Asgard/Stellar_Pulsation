@@ -1,13 +1,19 @@
 #!/home/demon/anaconda3/bin/python3
 
-from StarParams.params import Params as Prm
+#-----------------------------------------------------------------------------------
+
+from EoS.eos import Eos as Eos
 import numpy as np
 
-class NS(Prm):
+#-----------------------------------------------------------------------------------
+
+class NS(Eos):
 
     barP = []
     barM = []
     r = []
+
+    #-----------------------------------------------------------------------------------
 
     def __init__(self):
         super().__init__()
@@ -16,23 +22,46 @@ class NS(Prm):
         self.barM.append(init_params["barM0"])
         self.r.append(init_params["r0"])
         
+    #-----------------------------------------------------------------------------------
 
     def print_params(self):
         params = self.get_params()
         for index in params:
             print(" > [{}:={:5.4e}]\n".format(index, params[index]))
-    
+    #-----------------------------------------------------------------------------------
+
     def dbarM_dr(self):
         params = self.get_params()
+        Ms = params["Ms"]
+        c = params["c"]
+        pi = params["pi"]
+        eps0 = params["e0_rl"]
+
+        barP = self.barP[-1]
+        r = self.r[-1]
+
+        dbarMdr = (1.e15*4.*pi*eps0/(Ms*c**2))*(r**2.*self.eos(barP))
+        return dbarMdr
         
+    #-----------------------------------------------------------------------------------
 
     def dbarP_dr(self):
-        pass
+
+        params = self.get_params()
+        R0 = params["R0"]
+        barM = self.barM[-1]
+        barP = self.barP[-1]
+        r = self.r[-1]
+
+        dbarPdr = -R0*barM*self.eos(barP)/r**2
+        return dbarPdr
+
+    #-----------------------------------------------------------------------------------
 
     def build(self):
         i = 0
-        dr = 1.0
-        while(True and i<= 10000):
+        dr = 0.1
+        while(True and i<= 10000000):
             i += 1
             barP_lst = self.barP[-1]
             barP_nxt = barP_lst + self.dbarP_dr()*dr
@@ -48,15 +77,27 @@ class NS(Prm):
 
             else:
                 break
-    
-    outfname = "output.dat"
-    output = np.array([r,barM, barP]).T
-    np.savetxt(outfname,output, fmt='%.18e', delimiter="\t")
 
+        #-----------------------------------------------------------------------------------
+
+        print(" > r={} barM={:5.4e} barP={:5.4e}".format(i,self.barM[-1], self.barP[-1]))
+
+        outfname = "output.dat"
+        output = np.array([self.r,self.barM, self.barP])
+        np.savetxt(outfname, output.T, fmt="%6.5e", delimiter="\t")
+
+#-----------------------------------------------------------------------------------
 
 def main():
     star_obj = NS()
+    star_obj.print_params()
+    print("--------------------------------------------------\n")
     star_obj.build()
+    print("--------------------------------------------------\n")
+
+#-----------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()
+
+#-----------------------------------------------------------------------------------

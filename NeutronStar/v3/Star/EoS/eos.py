@@ -1,11 +1,15 @@
 try:
     from StarParams.params import Params as prm
 except ImportError:
-    print("ImpportErrot-Params")
+    print("ImportErrot-Params")
+
+#-----------------------------------------------------------------------------------
 
 class Eos(prm):
+
     def __init__(self):
         super().__init__()
+
     def eos(self, barP):
 
         params = self.get_params()
@@ -17,3 +21,5 @@ class Eos(prm):
         bare = (barP/barK)**(1./gamma_rl) 
 
         return bare
+
+#-----------------------------------------------------------------------------------
