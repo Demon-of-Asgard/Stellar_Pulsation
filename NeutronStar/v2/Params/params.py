@@ -25,10 +25,14 @@ class params:
     Anr = 2.4216
     Ar  = 2.8663
     e0 = 5.346e36 #erg/cm^3 
+    P0 = 1.0e-15
+    M0 = 0.0
 
     alpha_ = R0
     gamma_r = 1.0
     gamma_nr = 5./3.
+    
+
 
     def __init__(self):
         pass
@@ -38,7 +42,7 @@ class params:
         params = {
             "pi" : self.pi,
             "c" : self.c,
-            "hbar" :  self.hbar,
+            "hbar" : self.hbar,
             "mn" : self.mn,
             "me" :  self.me,
             "R0" : self.R0,
@@ -49,7 +53,9 @@ class params:
 
             "A_nr" : self.Anr,
             "A_r" : self.Ar,
-            "e0" : self.mn**4*self.c**5/(3.*self.pi**2*self.hbar**3),
+            "e0" : self.e0, #self.mn**4*self.c**5/(3.*self.pi**2*self.hbar**3),
+            "P0" : self.P0,
+            "M0" : self.M0,
 
             "alpha" : self.R0,
             "gamma_r" : self.gamma_r,

@@ -1,4 +1,6 @@
 #!/home/demon/anaconda3/bin/python3
+
+#---------------------------------------------------------------------
 try:
     import sys
 except ImportError:
@@ -10,15 +12,18 @@ except ImportError:
     
 from BuildNS.buildNS import NS
 
+#---------------------------------------------------------------------
 
 def main(startype):
-    star = NS()
-    star.buildNS()
+    Star = NS()
+    Star.construct()
     # if build_stat == 0:
     #     return(0)
     # else:
     #     return(1)
     return(0)
+
+#---------------------------------------------------------------------
 
 if __name__ == "__main__":
 
@@ -35,3 +40,5 @@ if __name__ == "__main__":
         print("Success")
     else:
         print("Failed to execute the programme.")
+
+#---------------------------------------------------------------------
