@@ -9,6 +9,8 @@ from Plot.plot import Plot as Plot
 #-----------------------------------------------------------------------------------
 
 class NS(Eos):
+    ''' Calss representing a Neutron star. Inherits properties of class Eos,
+    which inherits properties from class Params.'''
 
     barP = []
     barM = []
@@ -26,12 +28,17 @@ class NS(Eos):
     #-----------------------------------------------------------------------------------
 
     def print_params(self):
+        ''' To cross check values of the star-parameters.'''
+
         params = self.get_params()
         for index in params:
             print(" > [{}:={:5.4e}]\n".format(index, params[index]))
+
     #-----------------------------------------------------------------------------------
 
     def dbarM_dr(self):
+        ''' RHS of the mass balance equation in the TOV eqns. '''
+
         params = self.get_params()
         Ms = params["Ms"]
         c = params["c"]
@@ -47,6 +54,7 @@ class NS(Eos):
     #-----------------------------------------------------------------------------------
 
     def dbarP_dr(self):
+        ''' RHS of the force balance eqn in the TOV eqns.'''
 
         params = self.get_params()
         R0 = params["R0"]
@@ -60,6 +68,10 @@ class NS(Eos):
     #-----------------------------------------------------------------------------------
 
     def build(self):
+        ''' Estimate the next value of bar P, barM and r by solving TOV eqns
+         using simple Euler method. The iteration of the while-loop terminates when barP
+         hits negative value. '''
+
         i = 0
         dr = 0.1
         while(True and i<= 10000000):
@@ -92,12 +104,12 @@ class NS(Eos):
 #-----------------------------------------------------------------------------------
 
 def main():
-    star_obj = NS()
-    star_obj.print_params()
+    star_obj = NS() # Instance of class NS
+    star_obj.print_params() # cross check the params. 
     print("--------------------------------------------------\n")
-    outfanme = star_obj.build()
+    outfanme = star_obj.build() # Build star
     print("--------------------------------------------------\n")
-    plot_obj = Plot()
+    plot_obj = Plot() # Used for plotting
     plot_obj.plot(outfanme)
 
 
