@@ -20,11 +20,35 @@ class NS(Eos):
 
     def __init__(self):
         super().__init__()
-        init_params = self.get_init_params()
-        self.barP.append(init_params["barP0"])
-        self.barM.append(init_params["barM0"])
-        self.r.append(init_params["r0"])
+        init_vals = self.get_init_vals()
+        self.barP.append(init_vals["barP0"])
+        self.barM.append(init_vals["barM0"])
+        self.r.append(init_vals["r0"])
+
+    #-----------------------------------------------------------------------------------
+    def get_init_vals(self):
+        init_params = self.init_params()
+        params = self.get_params()
+
+        Ms = params["Ms"]
+        c = params["c"]
+        pi = params["pi"]
+        e0_rl = params["e0_rl"]
+
+        barP0 = init_params["barP0"]
+        r0 = init_params["r0"]
+
+        barM0 = (4.*pi*e0_rl/(3.*Ms*c**2))*r0**3.*self.eos(barP0) 
+
+        init_vals = {
+            "r0":r0,
+            "barP0":barP0,
+            "barM0":barM0,
+        }
+        print(" > Initial values: {}".format(init_vals))
+        return init_vals
         
+
     #-----------------------------------------------------------------------------------
 
     def print_params(self):
@@ -48,7 +72,10 @@ class NS(Eos):
         barP = self.barP[-1]
         r = self.r[-1]
 
-        dbarMdr = (1.e15*4.*pi*eps0/(Ms*c**2))*(r**2.*self.eos(barP))
+        barE = self.eos(barP)
+
+        dbarMdr = (1.e15*4.*pi*eps0/(Ms*c**2))*(r**2.*barE)
+
         return dbarMdr
         
     #-----------------------------------------------------------------------------------
@@ -58,11 +85,15 @@ class NS(Eos):
 
         params = self.get_params()
         R0 = params["R0"]
+
         barM = self.barM[-1]
         barP = self.barP[-1]
         r = self.r[-1]
 
-        dbarPdr = -R0*barM*self.eos(barP)/r**2
+        barE = self.eos(barP)
+
+        dbarPdr = -R0*barM*barE/r**2
+
         return dbarPdr
 
     #-----------------------------------------------------------------------------------
@@ -75,7 +106,9 @@ class NS(Eos):
         i = 0
         dr = 0.1
         while(True and i<= 10000000):
+
             i += 1
+
             barP_lst = self.barP[-1]
             barP_nxt = barP_lst + self.dbarP_dr()*dr
             barM_lst = self.barM[-1]
@@ -93,7 +126,7 @@ class NS(Eos):
 
         #-----------------------------------------------------------------------------------
 
-        print(" > r={} barM={:5.4e} barP={:5.4e}".format(i,self.barM[-1], self.barP[-1]))
+        print(" > r={} barM={:5.4e} barP={:5.4e}".format(self.r[-1],self.barM[-1], self.barP[-1]))
 
         outfname = "output.dat"
         output = np.array([self.r,self.barM, self.barP])

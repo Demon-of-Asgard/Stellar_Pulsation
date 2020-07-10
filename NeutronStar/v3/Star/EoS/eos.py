@@ -1,11 +1,11 @@
 try:
-    from StarParams.params import Params as prm
+    from StarParams.params import Params as Prm
 except ImportError:
     print("ImportErrot-Params")
 
 #-----------------------------------------------------------------------------------
 
-class Eos(prm):
+class Eos(Prm):
 
     def __init__(self):
         super().__init__()
@@ -13,13 +13,12 @@ class Eos(prm):
     def eos(self, barP):
 
         params = self.get_params()
-        Krl = params["Krl"]
-        e0_rl = params["e0_rl"] 
-        gamma_rl = params["gamma_rl"]
+        A_rl = params["A_rl"]
+        A_nrl = params["A_nrl"]
+        gamma_nrl = params["gamma_nrl"]
 
-        barK = Krl*e0_rl**(gamma_rl-1) 
-        bare = (barP/barK)**(1./gamma_rl) 
+        barE = A_rl*barP + A_nrl*(barP**(1./gamma_nrl))
 
-        return bare
+        return barE
 
 #-----------------------------------------------------------------------------------
