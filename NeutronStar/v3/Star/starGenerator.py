@@ -85,6 +85,10 @@ class NS(Eos):
 
         params = self.get_params()
         R0 = params["R0"]
+        pi = params["pi"]
+        c  = params["c"]
+        e0_rl = params["e0_rl"]
+        Ms = params["Ms"]
 
         barM = self.barM[-1]
         barP = self.barP[-1]
@@ -92,7 +96,12 @@ class NS(Eos):
 
         barE = self.eos(barP)
 
-        dbarPdr = -R0*barM*barE/r**2
+        f1 = -R0*barM*barE/r**2
+        f2 = 1. +(barP/barE)
+        f3 = 1. + (4.*pi*e0_rl/(Ms*c**2))*(barM/r)
+        f4 = 1. - 2.*R0*(barM/r)   
+
+        dbarPdr = f1*f2*f3/f4
 
         return dbarPdr
 
@@ -126,7 +135,7 @@ class NS(Eos):
 
         #-----------------------------------------------------------------------------------
 
-        print(" > r={} barM={:5.4e} barP={:5.4e}".format(self.r[-1],self.barM[-1], self.barP[-1]))
+        print(" > r={:5.4e} barM={:5.4e} barP={:5.4e}".format(self.r[-1],self.barM[-1], self.barP[-1]))
 
         outfname = "output.dat"
         output = np.array([self.r,self.barM, self.barP])
