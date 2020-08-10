@@ -60,12 +60,12 @@ class Plot:
             try:
                 import matplotlib.pyplot as plt
             except:
-                print("ImportError: matplotlib.pyplot @ plot")
+                print("matplotlib.pyplot ImportError: @ Plot.single_plot")
 
             try:
                 import numpy as np
             except:
-                print("ImportError: Numpy @ plot")
+                print("Numpy ImportError: @ Plot.single_plot")
 
             #-------------------------------------------------------------------------------------------------
 
@@ -74,7 +74,7 @@ class Plot:
 
             #-------------------------------------------------------------------------------------------------
 
-            lw = 1.5
+            lw = 1.0
             color = {
                 "indigo": "#4B0082",
                 "royal_blue": "#4169E1",
@@ -90,9 +90,12 @@ class Plot:
             ax.tick_params(labelsize=10, direction='in', length=5,
                             width=.5, colors='k', grid_color='k', grid_alpha=0.5)
 
-            ax.plot(data[:, 0], data[:, 1], color=color["crimson"],
-                    linestyle="-", linewidth=lw)
-            ax.set_xlabel("$r~$[ km]")
+            ax.plot(data[:, 0], data[:, 1], color=color["salmon"],
+                    linestyle="-", zorder = 1, linewidth=lw)
+            ax.scatter(data[:, 0], data[:, 1], color=color["royal_blue"],
+                    marker='.', zorder = 2, linewidth=lw)
+
+            ax.set_xlabel("R [ km]")
             ax.set_ylabel("M/M${_{\\odot}}$")
             ax.set_title(title)
 

@@ -1,5 +1,19 @@
 #!/home/demon/anaconda3/bin/python3
 
+''' 
+This program constructs the mass and pressure distribution of a neutron star using TOV equations.
+    Refs:
+        1)  Neutronstar for undergraduate.
+            Authors: Richard R. Silbar, Sanjay Reddy.
+            Arxiv: 0309041
+            Url: https://arxiv.org/abs/nucl-th/0309041
+        
+        2)  Compact stars for undergraduates.
+            Authors: I. Segert, M. Hampel, C. Greiner, J. S. Beilich.
+            Arxiv: 0506417v1
+            Url: https://arxiv.org/abs/astro-ph/0506417
+'''
+
 #-----------------------------------------------------------------------------------
 
 import numpy as np
@@ -41,9 +55,10 @@ class Star(Eos):
 
     def __del__(self):
         objname = self.__class__.__name__
-        print(objname, "Deleted.")
+        print(" > ", objname, "Deleted.")
 
     #-----------------------------------------------------------------------------------
+    
     def get_init_vals(self, barP0):
 
         init_params = self.init_params()
@@ -86,8 +101,9 @@ class Star(Eos):
 
     def dbarM_dr(self, r, barM, barP, params):
 
-        ''' RHS of the mass balance equation in the TOV eqns. '''
-
+        ''' 
+        RHS of the mass balance equation in the TOV eqns. 
+        '''
         
         Ms = params["Ms"]
         c = params["c"]
@@ -104,7 +120,9 @@ class Star(Eos):
 
     def dbarP_dr(self, r, barM, barP, params):
 
-        ''' RHS of the force balance eqn in the TOV eqns.'''
+        ''' 
+        RHS of the force balance eqn in the TOV eqns.
+        '''
 
         R0 = params["R0"]
         pi = params["pi"]
@@ -129,8 +147,9 @@ class Star(Eos):
 
     #-----------------------------------------------------------------------------------
 
+
     def build(self):
-        print(self.barP[-1])
+        
         ''' 
         Estimate the next value of bar P, barM and r by solving TOV eqns
         using simple Euler method. The iteration of the while-loop terminates when barP
@@ -140,6 +159,7 @@ class Star(Eos):
         params = self.get_params()
         i = 0
         dr = self.dr
+        
         while(True and i<= 10000000):
 
             i += 1
@@ -171,7 +191,6 @@ class Star(Eos):
 
             barM_nxt = barM_lst + (1.0/6.0)*(barMK1+(2.0*barMK2)+(2.0*barMK3)+barMK4)
 
-            
             r_nxt = r_lst + dr
 
             if barP_nxt >= 0.0:
@@ -198,22 +217,26 @@ class Star(Eos):
 
 def main():
 
-    barP0s = [5.0e-5, 1.0e-4, 0.001,0.002, 0.004, 0.008, 0.01, 0.02, 0.04,0.08,0.1, 0.50, 1.0, 8.0, 16.0, 32.0, 64.0, 100.0, 200.0, 400.0, 800.0, 1.0e3,2.0e3]#np.arange(0.001, 1000.01, 0.001)
-    
+    barP0s = [
+            5.0e-5, 8.0e-5, 1.0e-4, 5.0e-4, 0.001,0.002, 0.004, 0.008, 0.01, 0.02, 0.04,0.08,0.1,0.50,
+            1.0, 8.0, 16.0, 32.0, 64.0, 100.0, 200.0, 400.0, 800.0, 1.0e3,2.0e3
+        ]
+        
     R = []
     barM = []
     Nil = []
 
     for barP0 in barP0s:
+
         NS = Star(barP0) # Instance of class NS
         #NS.print_params() # cross check the params. 
-        print("--------------------------------------------------\n")
+        print(" --------------------------------------------------\n")
         outdata = NS.build() # Build star
-        outfname = outdata[2]
+
         R.append(outdata[0])
         barM.append(outdata[1])
         Nil.append(float("nan"))
-        print("--------------------------------------------------\n")
+        print(" --------------------------------------------------\n")
         # plot_obj = Plot() # Used for plotting
         # plot_obj.plot(outfname)
         del NS

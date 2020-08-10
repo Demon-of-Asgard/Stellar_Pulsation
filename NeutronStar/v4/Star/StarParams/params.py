@@ -23,13 +23,19 @@ class Params:
         self.__alpha_rl = self.__R0
         self.__gamma_rl = 4./3.
         self.__gamma_nrl = 5./3.
-        self.__A_rl = 2.8663
-        self.__A_nrl = 2.4216
+
+        # EoS PARAMS WITH NEUTRONS ONLY.
+        # self.__A_rl = 2.4216  
+        # self.__A_nrl = 2.8663
+
+        # EoS PARAMS WITH NEUTRONS, PROTONS AND ELECTRONS.
+        self.__A_rl = 2.891 #  --->neutrons only
+        self.__A_nrl = 2.572 #2.4216
 
         #Initial values.
         self.__barM0 = 0.0
         self.__barP0 = 0.01
-        self.__dr = 0.01
+        self.__dr = 1.0e-4
         self.__r0 = self.__dr
 
     #-------------------------------------------------------------
