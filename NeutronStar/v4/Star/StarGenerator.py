@@ -1,7 +1,6 @@
 #!/home/demon/anaconda3/bin/python3
-
 ''' 
-This program constructs the mass and pressure distribution of a neutron star using TOV equations.
+This code constructs the mass and pressure distribution of a neutron star using TOV equations.
     Refs:
         1)  Neutronstar for undergraduate.
             Authors: Richard R. Silbar, Sanjay Reddy.
@@ -102,7 +101,7 @@ class Star(Eos):
     def dbarM_dr(self, r, barM, barP, params):
 
         ''' 
-        RHS of the mass balance equation in the TOV eqns. 
+        RHS of the mass balance equation in the TOV. 
         '''
         
         Ms = params["Ms"]
@@ -121,7 +120,7 @@ class Star(Eos):
     def dbarP_dr(self, r, barM, barP, params):
 
         ''' 
-        RHS of the force balance eqn in the TOV eqns.
+        RHS of the force balance eqn in the TOV.
         '''
 
         R0 = params["R0"]
@@ -152,7 +151,7 @@ class Star(Eos):
         
         ''' 
         Estimate the next value of bar P, barM and r by solving TOV eqns
-        using simple Euler method. The iteration of the while-loop terminates when barP
+        using Runge-Kutta method. The iteration of the while-loop terminates when barP
         hit negative value. 
         '''
 
@@ -227,16 +226,17 @@ def main():
     Nil = []
 
     for barP0 in barP0s:
-
+        boundary = "="*100
         NS = Star(barP0) # Instance of class NS
         #NS.print_params() # cross check the params. 
-        print(" --------------------------------------------------\n")
+        print(boundary,"\n")
         outdata = NS.build() # Build star
 
         R.append(outdata[0])
         barM.append(outdata[1])
         Nil.append(float("nan"))
-        print(" --------------------------------------------------\n")
+        print(boundary,"\n")
+
         # plot_obj = Plot() # Used for plotting
         # plot_obj.plot(outfname)
         del NS

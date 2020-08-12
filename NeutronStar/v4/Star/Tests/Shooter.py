@@ -1,6 +1,6 @@
 import numpy as np 
 '''
-Program to find the value ou for a given pressure. 
+Program to find the value of 'u' for a given pressure. 
 '''
 
 def BE_fun(u):

@@ -98,7 +98,7 @@ class Plot:
             ax.set_xlabel("R [ km]")
             ax.set_ylabel("M/M${_{\\odot}}$")
             ax.set_title(title)
-
+            plt.savefig("./Output/barMVsR.png")
             plt.show()
 
 #-------------------------------------------------------------------------------------------------
