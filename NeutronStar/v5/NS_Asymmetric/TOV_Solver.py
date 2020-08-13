@@ -107,10 +107,10 @@ def main():
     
     star_params = Prm()
     star_params.print_star_params()
+    star_params.print_conv_factors()
     NS.print_central_values()
     del NS
 
-    
     print("\n > ",boundary)
 
 #-------------------------------------------------------------------------------------------------------------------------------------------

@@ -7,29 +7,31 @@ except ImportError:
 class Params:
     def __init__(self):
         
-        # Constant values. 
+        '''Primary Constants'''
         self.__pi = np.pi
-        self.__c = 3.0e10  # [cm/s]
+        self.__c  = 2.9979e10  # [cm/s]
         self.__Ms = 1.989e33  # [gm]
-        self.__h = 6.62607004e-27  # [erg s]
+        self.__h  = 6.62607004e-27  # [erg s]
         self.__hbar = self.__h/(2.0*self.__pi)  # [erg s]
-        self.__MeV_by_Erg =  1.602176487E-6 # Dimesion less
-        self.__mn = 1.6749e-24  # [gm]
+        self.__MeV_to_Erg =  1.602176487E-6 # Dimesion less
+        self.__mN = 1.6749e-24  # [gm]
         self.__me = 9.10e-28  # [gm]
         self.__R0 = 1.476  # [km]
         self.__n0 = 1.60e38 # [cm^-3] := n0 = 0.16/(fm^3)
 
-        ''' Check later '''
-        self.__e0 = self.__mn**4*self.__c**5/(3.*self.__pi**2*self.__hbar**3) 
-        self.__EF0 = (3.0/5.0)*(1.0/(2.0*self.__mn))*(3.0*self.__pi**2*self.__hbar**3*self.__n0/2.0)**(2.0/3.0)
+        '''Conversion factors'''
+        self.__INV_MEV_TO_CM = (1.0/self.__MeV_to_Erg)*self.__hbar*self.__c
+        self.__INV_MEV_TO_SEC = (1.0/self.__MeV_to_Erg)*self.__hbar
+        self.__MEV_TO_ERG = self.__MeV_to_Erg
+        self.__MEV_TO_GM = self.__MeV_to_Erg/(self.__c**2)
 
-        #Conversion factors
-        self.__INV_MEV_TO_CM = self.__hbar*self.__c/self.__MeV_by_Erg
-        self.__INV_MEV_TO_SEC = self.__hbar/self.__MeV_by_Erg
-        self.__MEV_TO_ERG = self.__MeV_by_Erg
-        self.__MEV_TO_GM = self.__MeV_by_Erg/(self.__c**2)
+        #Check later 
+        '''Derived constants'''
+        self.__e0N = self.__mN*self.__c**2 # Rest mass energy of neutron.
+        self.__e0 = self.__mN**4*self.__c**5/(3.*self.__pi**2*self.__hbar**3) # This quantity is arbitrary
+        self.__EF0 = (3.0/5.0)*(1.0/(2.0*self.__mN))*(3.0*self.__pi**2*self.__hbar**3*self.__n0/2.0)**(2.0/3.0) # <KE> of neutron for k_F(n0)
 
-        #Initial values.
+        '''Initial values'''
         self.__barM0 = 0.0
         self.__barP0 = 0.01
         self.__dr = 1.0e-4
@@ -79,6 +81,7 @@ class Params:
             "R0":self.__R0,
             "Ms":self.__Ms,
             "n0":self.__n0,
+            "e0N":self.__e0N,
             "e0" : self.__e0,
             "EF0":self.__EF0,
         }
@@ -86,8 +89,9 @@ class Params:
         return star_params
 
     #-------------------------------------------------------------
-    ''' Only to check the values. '''
+    
     def print_star_params(self):
+        ''' Only to check the values. '''
 
         left_width = 15
         rigt_width = 15
@@ -121,8 +125,8 @@ class Params:
 
     #-------------------------------------------------------------
 
-    ''' Only to check the values. '''
     def print_star_init_values(self):
+        ''' Only to check the values. '''
 
         left_width = 15
         rigt_width = 15

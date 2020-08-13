@@ -92,6 +92,7 @@ class Plot:
 
             ax.plot(data[:, 0], data[:, 1], color=color["salmon"],
                     linestyle="-", zorder = 1, linewidth=lw)
+                    
             ax.scatter(data[:, 0], data[:, 1], color=color["royal_blue"],
                     marker='.', zorder = 2, linewidth=lw)
 
