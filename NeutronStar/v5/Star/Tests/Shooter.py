@@ -29,7 +29,7 @@ def deltaP_nonsym(u):
 
 def BE_fun(u):
 
-    A =-122.2
+    A =-118.2
     B = 65.39
     sigma = 2.112
     mN = 939.56

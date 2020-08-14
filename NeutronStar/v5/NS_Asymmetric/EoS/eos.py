@@ -3,6 +3,7 @@ try:
 except:
     print("Error wile importing 'StarParams.params' @ eos.py")
     exit(1)
+
 #-----------------------------------------------------------------------------------
 
 
@@ -18,6 +19,8 @@ class Eos_Asym():
         self.__B = 65.39 * conv_factors["MEV_TO_ERG"] # B[MeV] --> B[erg]
         self.__sigma = 2.112 # dimension less
         self.__alpha = 1.0   # Dimension less
+        self.__S0 = 30.0* conv_factors["MEV_TO_ERG"] #[erg]
+
 
     #-----------------------------------------------------------------------------------
 
@@ -53,6 +56,33 @@ class Eos_Asym():
 
     #-----------------------------------------------------------------------------------
 
+    def F(self, u):
+        return u
+
+    #-----------------------------------------------------------------------------------
+    
+    def dF(self, u):
+        return 1.0
+
+    #-----------------------------------------------------------------------------------
+
+    def S(self, u):
+        _Star_params = Prm()
+        star_params = _Star_params.get_star_init_values()
+
+        EF0 = star_params["EF0"]
+        S0 = self.__S0
+
+        S0 = 30.0 # MeV
+        EF0 =  22.1 # MeV
+        
+        S = (2.0**(2.0/3.0)-1)*(5.0/3.0)*EF0*(u**(2.0/3.0)-self.F(u))+S0*self.F(u)
+
+        return S
+
+    #-----------------------------------------------------------------------------------
+
+
     def barE(self,u):
 
         eos_params = self.get_normalized_parameters()
@@ -73,7 +103,7 @@ class Eos_Asym():
         '''
     
 
-        barE = (barEN0*u) + (barEF0*u**(5.0/3.0)) + ((barA/2.0)*u**2) + ((barB/(1+sigma))*u**(1.0+sigma)) 
+        barE = (barEN0*u) + (barEF0*u**(5.0/3.0)) + ((barA/2.0)*u**2) + ((barB/(1+sigma))*u**(1.0+sigma)) + alpha**2 * self.S(u)
 
         return barE
     #-----------------------------------------------------------------------------------
