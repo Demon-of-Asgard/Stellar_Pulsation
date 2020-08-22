@@ -4,7 +4,7 @@ except ImportError:
     print("ImportError-Numpy @ params")
     exit(1)
 
-class Params:
+class Parameters:
     def __init__(self):
         
         '''Primary Constants'''
@@ -13,11 +13,11 @@ class Params:
         self.__Ms = 1.989e33  # [gm]
         self.__h  = 6.62607004e-27  # [erg s]
         self.__hbar = self.__h/(2.0*self.__pi)  # [erg s]
-        self.__MeV_to_Erg =  1.602176487E-6 # Dimesion less
         self.__mN = 1.6749e-24  # [gm]
         self.__me = 9.10e-28  # [gm]
-        self.__R0 = 1.476  # [km]
-        self.__n0 = 1.60e38 # [cm^-3] := n0 = 0.16/(fm^3)
+        self.__R0 = 1.476e5 # [cm]
+        
+        self.__MeV_to_Erg =  1.602176487E-6 # Dimesion less
 
         '''Conversion factors'''
         self.__INV_MEV_TO_CM = (1.0/self.__MeV_to_Erg)*self.__hbar*self.__c
@@ -25,16 +25,13 @@ class Params:
         self.__MEV_TO_ERG = self.__MeV_to_Erg
         self.__MEV_TO_GM = self.__MeV_to_Erg/(self.__c**2)
 
-        #Check later 
-        '''Derived constants'''
-        self.__e0N = self.__mN*self.__c**2 # Rest mass energy of neutron.
-        self.__e0 = self.__mN**4*self.__c**5/(3.*self.__pi**2*self.__hbar**3) # This quantity is arbitrary
-        self.__EF0 = (3.0/5.0)*(1.0/(2.0*self.__mN))*(3.0*self.__pi**2*self.__hbar**3*self.__n0/2.0)**(2.0/3.0) # <KE> of neutron for k_F(n0)
+        
+        
 
-        '''Initial values'''
+        '''Initial values '''
         self.__barM0 = 0.0
         self.__barP0 = 0.01
-        self.__dr = 1.0e-4
+        self.__dr = 1.0e3
         self.__r0 = self.__dr
 
     #-------------------------------------------------------------
@@ -73,34 +70,32 @@ class Params:
 
     #-----------------------------------------------------------
 
-    def get_star_params(self):
+    def get_constants(self):
 
-        star_params = {
+        consts = {
+            "hbar":self.__hbar,
             "c":self.__c,
             "pi":self.__pi,
             "R0":self.__R0,
             "Ms":self.__Ms,
-            "n0":self.__n0,
-            "e0N":self.__e0N,
-            "e0" : self.__e0,
-            "EF0":self.__EF0,
+            "mN":self.__mN,
         }
 
-        return star_params
+        return consts
 
     #-------------------------------------------------------------
     
-    def print_star_params(self):
+    def print_constants(self):
         ''' Only to check the values. '''
 
         left_width = 15
         rigt_width = 15
-        star_params = self.get_star_params()
+        constants = self.get_constants()
 
         print(" ","STAR PARAMS".center(left_width+rigt_width, '-'))
         print(" ","="*(left_width+rigt_width))
 
-        for item, value in  star_params.items():
+        for item, value in  constants.items():
             print(" ",item.ljust(left_width, '.')+" | "+'{:8.6e}'.format(value).ljust(rigt_width))
         print("\n")
 
@@ -141,8 +136,8 @@ class Params:
 
 #-------------------------------------------------------------
 def main():
-    obj = Params()
-    print(obj.get_star_params())
+    prmObj = Parameters()
+    print(prmObj.print_constants())
 
 #-------------------------------------------------------------
 

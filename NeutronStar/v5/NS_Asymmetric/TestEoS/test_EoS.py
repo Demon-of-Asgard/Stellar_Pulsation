@@ -1,7 +1,7 @@
 #-------------------------------------------------------------------------------------------------
 
-import numpy as np 
-import matplotlib.pyplot as plt 
+import numpy as np
+import matplotlib.pyplot as plt
 
 #-------------------------------------------------------------------------------------------------
 
@@ -17,12 +17,12 @@ class Plot:
     #-------------------------------------------------------------------------------------------------
 
 
-    def plot(self, u_list, barE, barP):
+    def plot(self, u_list, E, P):
 
         plt.rc('text', usetex=True)
         plt.style.use('seaborn-whitegrid')
 
-        lw = 1.5
+        lw = 2.0
         ls = '-'
 
         color = {
@@ -33,41 +33,52 @@ class Plot:
         }
 
         plt.plot(
-            u_list, barE, color = color["royal_blue"], linestyle = ls, 
+            u_list, E, color = color["royal_blue"], linestyle = ls,
             linewidth = lw, label = "E"
             )
 
         plt.plot(
-            u_list, barP, color = color["salmon"], linestyle = ls, 
+            u_list, P, color = color["salmon"], linestyle = ls,
             linewidth = lw, label = "P"
             )
         plt.xlabel("u")
-        plt.ylabel("[E/$\\varepsilon_0$]" +" and "+"[P/$\\varepsilon_0$]")
+        plt.ylabel("E, P$~[MeV/fm^3]$")
 
         plt.legend()
         plt.show()
 
+        #-------------------------------------------------------------------------------------------------
+
+        plt.plot(
+            E, P, color = color["salmon"], linestyle = ls,
+            linewidth = lw, label = "P"
+            )
+        plt.xlabel("E$~[MeV/fm^3]$")
+        plt.ylabel("P$~[MeV/fm^3]$")
+
+        plt.legend()
+        plt.show()
 #-------------------------------------------------------------------------------------------------
 
 def main():
-    
+
     u_list = np.arange(0.010,10.001, 0.001)
     _EoS_obj = EoS()
 
-    barE = []
-    barP = []
+    E = []
+    P = []
 
     for u in u_list:
 
         try:
-            barE.append(_EoS_obj.E(u))
-            barP.append(_EoS_obj.P(u))
+            E.append(_EoS_obj.E(u))
+            P.append(_EoS_obj.P(u))
 
         except ZeroDivisionError:
             print("'ZeroDivisionError' occured for u: {}".format(u))
 
-    _plot_obj = Plot() 
-    _plot_obj.plot(u_list,barE,barP)
+    _plot_obj = Plot()
+    _plot_obj.plot(u_list, E, P)
 
 #-------------------------------------------------------------------------------------------------
 

@@ -1,13 +1,13 @@
 #!/home/demon/anaconda3/bin/python3
 
-''' 
+'''
 This program constructs the mass and pressure distribution of a neutron star using TOV equations.
     Refs:
         1)  Neutronstar for undergraduate.
             Authors: Richard R. Silbar, Sanjay Reddy.
             Arxiv: 0309041
             Url: https://arxiv.org/abs/nucl-th/0309041
-        
+
         2)  Compact stars for undergraduates.
             Authors: I. Segert, M. Hampel, C. Greiner, J. S. Beilich.
             Arxiv: 0506417v1
@@ -23,7 +23,7 @@ from Plot.plot import Plot as Plot
 #-----------------------------------------------------------------------------------
 
 class Star(Eos):
-    ''' 
+    '''
     Calss representing a Neutron star. Inherits properties of class Eos,
     which inherits properties from class Params.
     '''
@@ -58,7 +58,7 @@ class Star(Eos):
         print(" > ", objname, "Removed.")
 
     #-----------------------------------------------------------------------------------
-    
+
     def get_init_vals(self, barP0):
 
         init_params = self.init_params()
@@ -74,7 +74,7 @@ class Star(Eos):
         r0 = init_params["r0"]
         dr = init_params["dr"]
 
-        barM0 = (4.*pi*e0_rl/(3.*Ms*c**2))*r0**3.*self.eos(barP0) 
+        barM0 = (4.*pi*e0_rl/(3.*Ms*c**2))*r0**3.*self.eos(barP0)
 
         init_vals = {
             "r0":r0,
@@ -82,15 +82,15 @@ class Star(Eos):
             "barP0":barP0,
             "barM0":barM0,
         }
-        
+
         print(" > Initial values: {}".format(init_vals))
         return init_vals
-        
+
 
     #-----------------------------------------------------------------------------------
 
     def print_params(self):
-        ''' 
+        '''
         To cross check values of the star-parameters.
         '''
 
@@ -102,10 +102,10 @@ class Star(Eos):
 
     def dbarM_dr(self, r, barM, barP, params):
 
-        ''' 
-        RHS of the mass balance equation in the TOV eqns. 
         '''
-        
+        RHS of the mass balance equation in the TOV eqns.
+        '''
+
         Ms = params["Ms"]
         c = params["c"]
         pi = params["pi"]
@@ -116,12 +116,12 @@ class Star(Eos):
         dbarMdr = (1.e15*4.*pi*eps0/(Ms*c**2))*(r**2.*barE)
 
         return dbarMdr
-        
+
     #-----------------------------------------------------------------------------------
 
     def dbarP_dr(self, r, barM, barP, params):
 
-        ''' 
+        '''
         RHS of the force balance eqn in the TOV eqns.
         '''
 
@@ -140,7 +140,7 @@ class Star(Eos):
         f1 = -R0*barM*barE/r**2
         f2 = 1. +(barP/barE)
         f3 = 1. + (4.*pi*e0_rl/(Ms*c**2))*(barM/r)
-        f4 = 1. - 2.*R0*(barM/r)   
+        f4 = 1. - 2.*R0*(barM/r)
 
         dbarPdr = f1*f2*f3/f4
 
@@ -150,31 +150,31 @@ class Star(Eos):
 
 
     def build(self):
-        
-        ''' 
+
+        '''
         Estimate the next value of bar P, barM and r by solving TOV eqns
         using simple Euler method. The iteration of the while-loop terminates when barP
-        hit negative value. 
+        hit negative value.
         '''
 
         params = self.get_params()
         i = 0
         dr = self.dr
-        
+
         while(True and i<= 10000000):
 
             i += 1
-            
+
             r_lst = self.r[-1]
             barM_lst = self.barM[-1]
-            barP_lst = self.barP[-1]  
-            
+            barP_lst = self.barP[-1]
+
             '''
-            Runge-Kutta implementation. 
-            
-            The differential eqns. are coupled. Runge-Kutta is implemented 
-            here only for one variable at a time per iteration. That is in each iteration, value of next 
-            barP is calculated assuming barM is a constant during that iteration. Similarely for other 
+            Runge-Kutta implementation.
+
+            The differential eqns. are coupled. Runge-Kutta is implemented
+            here only for one variable at a time per iteration. That is in each iteration, value of next
+            barP is calculated assuming barM is a constant during that iteration. Similarely for other
             parameters.
             '''
 
@@ -223,7 +223,7 @@ def main():
     #         1.0, 8.0, 16.0, 32.0, 64.0, 100.0, 200.0, 400.0, 800.0, 1.0e3,2.0e3
     #     ]
     barP0s = [
-             0.01, 
+             0.01,
         ]
     R = []
     barM = []
@@ -232,7 +232,7 @@ def main():
     for barP0 in barP0s:
 
         NS = Star(barP0) # Instance of class NS
-        #NS.print_params() # cross check the params. 
+        #NS.print_params() # cross check the params.
         print(" --------------------------------------------------\n")
         outdata = NS.build() # Build star
 

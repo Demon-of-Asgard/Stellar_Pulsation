@@ -6,8 +6,8 @@ except ImportError:
 
 class Params:
     def __init__(self):
-        
-        # Constant values. 
+
+        # Constant values.
         self.__pi = np.pi
         self.__c = 3.0e10  # [cm/s]
         self.__Ms = 1.989e33  # [gm]
@@ -25,7 +25,7 @@ class Params:
         self.__gamma_nrl = 5./3.
 
         # EoS PARAMS WITH NEUTRONS ONLY.
-        # self.__A_rl = 2.4216  
+        # self.__A_rl = 2.4216
         # self.__A_nrl = 2.8663
 
         # EoS PARAMS WITH NEUTRONS, PROTONS AND ELECTRONS.
@@ -35,7 +35,7 @@ class Params:
         #Initial values.
         self.__barM0 = 0.0
         self.__barP0 = 0.01
-        self.__dr = 1.0e-4
+        self.__dr = 1.0e-3
         self.__r0 = self.__dr
 
     #-------------------------------------------------------------
@@ -57,7 +57,7 @@ class Params:
         A_nrl = self.__A_nrl
 
         e0_rl = mn**4*c**5/(3.*pi**2*hbar**3)
-     
+
         dict_params = {
             "c":self.__c,
             "pi":self.__pi,
@@ -72,7 +72,7 @@ class Params:
         }
 
         return dict_params
-    
+
     def init_params(self):
         r0 = self.__r0
         dr = self.__dr
