@@ -51,7 +51,7 @@ class Plot:
         ax[1].set_xlabel("$r~$[km]")
         ax[1].set_ylabel("$P/\\epsilon_0$")
         ax[1].set_title("Pressure-Distribution")
-
+        plt.savefig("fig.png")
         plt.show()
 
 #-------------------------------------------------------------------------------------------------
@@ -93,8 +93,8 @@ class Plot:
             ax.plot(data[:, 0]/1.0e5, data[:, 1], color=color["royal_blue"],
                     linestyle="-", zorder = 1, linewidth=lw)
                     
-            # ax.scatter(data[:, 0]/1.0e5, data[:, 1], color=color["salmon"],
-            #          marker='.', zorder = 2, linewidth=lw)
+            ax.scatter(data[:, 0]/1.0e5, data[:, 1], color=color["salmon"],
+                     marker='.', zorder = 2, linewidth=lw)
 
             ax.set_xlabel("R [ km]")
             ax.set_ylabel("M/M${_{\\odot}}$")

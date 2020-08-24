@@ -10,12 +10,13 @@ class Parameters:
         '''Primary Constants'''
         self.__pi = np.pi
         self.__c  = 2.9979e10  # [cm/s]
+        self.__G = 	6.6743e-8 # [cm^3 /(g s^2)]
         self.__Ms = 1.989e33  # [gm]
         self.__h  = 6.62607004e-27  # [erg s]
         self.__hbar = self.__h/(2.0*self.__pi)  # [erg s]
         self.__mN = 1.6749e-24  # [gm]
         self.__me = 9.10e-28  # [gm]
-        self.__R0 = 1.476e5 # [cm]
+        self.__R0 = (self.__G*self.__Ms)/self.__c**2 # [cm]
         
         self.__MeV_to_Erg =  1.602176487E-6 # Dimesion less
 
@@ -33,7 +34,7 @@ class Parameters:
         self.__barP0 = 0.01
         self.__dr = 1.0e3
         self.__r0 = self.__dr
-
+        
     #-------------------------------------------------------------
 
     def get_conv_factors(self):

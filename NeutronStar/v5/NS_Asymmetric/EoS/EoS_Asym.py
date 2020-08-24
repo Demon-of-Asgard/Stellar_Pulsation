@@ -1,9 +1,5 @@
-try:
-    from StarParams.params import Parameters as Prm
-except:
-    print("Error wile importing 'StarParams.params' @ eos.py")
-    exit(1)
-
+from StarParams.params import Parameters as Prm
+from Root_finding.Rootfinding import RootFinder as Root
 #-----------------------------------------------------------------------------------
 
 class EoS_Asym():
@@ -29,6 +25,8 @@ class EoS_Asym():
         self.__alpha = 1.0   # Dimension less
         self.__S0 = 30.0* conv_factors["MEV_TO_ERG"] #[erg]
         self.__n0 = 0.16/(10**(-13))**3 # [#/(fm^3)] --> [#/(cm^3)] 
+        self.__u_lower = 0.0 # u = (n/n0)
+        self.__u_upper = 100.0
 
         self.__e0 = self.__mN**4*self.__c**5/(3.*self.__pi**2*self.__hbar**3) # [erg/cm^-3] # This quantity is arbitrary
         self.__EF0 = (
@@ -66,6 +64,13 @@ class EoS_Asym():
         for item, value in  EoS_params.items():
             print(" ",item.ljust(left_width, '.')+" | "+'{:8.6e}'.format(value).ljust(rigt_width))
         print("\n")
+
+    #-----------------------------------------------------------------------------------
+
+    def get_u(self,barP_i):
+        rootObj = Root()
+        u = rootObj.Bisection(self.barP, barP_i, self.__u_lower, self.__u_upper)
+        return u
 
     #-----------------------------------------------------------------------------------
 
@@ -107,7 +112,7 @@ class EoS_Asym():
     
     #-----------------------------------------------------------------------------------
 
-    def barP(self, u, barP_i=0):
+    def barP(self,u, barP_i=0.0):
 
         P = self.__n0*(
             (2.0/3.0)*self.__EF0*u**(5.0/3.0)
@@ -123,7 +128,9 @@ class EoS_Asym():
 
     #-----------------------------------------------------------------------------------
 
-    def barE(self, u):
+    def barE(self, barP):
+
+        u = self.get_u(barP)
 
         E = self.__n0*(
             (self.__eN0*u) 
