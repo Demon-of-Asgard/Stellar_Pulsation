@@ -23,8 +23,8 @@ from Plot.plot import Plot as Plot
 
 class Star(Eos):
     '''
-    Calss representing a Neutron star. Inherits properties of class Eos,
-    which inherits properties from class Params.
+    Calss representing a Neutron star. Inherits properties of 
+    class Eos, which inherits properties from class Params.
     '''
 
     barP = []
@@ -107,11 +107,11 @@ class Star(Eos):
         Ms = params["Ms"]
         c = params["c"]
         pi = params["pi"]
-        eps0 = params["e0_rl"]
+        e0 = params["e0_rl"]
 
         barE = self.eos(barP)
 
-        dbarMdr = (1.e15*4.*pi*eps0/(Ms*c**2))*(r**2.*barE)
+        dbarMdr = (1.0e15*4.*pi*e0/(Ms*c**2))*(r**2.*barE)
 
         return dbarMdr
 
@@ -137,7 +137,7 @@ class Star(Eos):
 
         f1 = -R0*barM*barE/r**2
         f2 = 1. +(barP/barE)
-        f3 = 1. + (4.*pi*e0_rl/(Ms*c**2))*(barM/r)
+        f3 = 1. + (4.*pi*e0_rl/(Ms*c**2))*(r**3.0)*(barP/barM)
         f4 = 1. - 2.*R0*(barM/r)
 
         dbarPdr = f1*f2*f3/f4
@@ -150,16 +150,17 @@ class Star(Eos):
     def build(self):
 
         '''
-        Estimate the next value of bar P, barM and r by solving TOV eqns
-        using Runge-Kutta method. The iteration of the while-loop terminates when barP
-        hit negative value.
+        Estimate the next value of bar P, barM and r by solving 
+        TOV eqnsusing Runge-Kutta method. The iteration of the 
+        while-loop terminates when barP hit negative value.
         '''
 
         params = self.get_params()
         i = 0
         dr = self.dr
+        break_loop = False
 
-        while(True and i<= 100000000):
+        while True:
 
             i += 1
 
@@ -170,55 +171,92 @@ class Star(Eos):
             '''
             Runge-Kutta implementation.
 
-            The differential eqns. are coupled. Runge-Kutta is implemented
-            here only for one variable at a time per iteration. That is in each iteration, value of next
-            barP is calculated assuming barM is a constant during that iteration. Similarely for other
-            parameters.
+            The differential eqns. are coupled. Runge-Kutta is 
+            implemented here only for one variable at a time 
+            per iteration. That is in each iteration, value of next
+            barP is calculated assuming barM is a constant 
+            during that iteration. Similarely for otherparameters.
             '''
+            barPK1 = dr * self.dbarP_dr(r_lst, barM_lst, 
+            barP_lst, params)
 
-            barPK1 = dr * self.dbarP_dr(r_lst, barM_lst, barP_lst, params)
-            barPK2 = dr * self.dbarP_dr(r_lst+(0.5*dr), barM_lst, barP_lst+(0.5*barPK1), params)
-            barPK3 = dr * self.dbarP_dr(r_lst+(0.5*dr), barM_lst, barP_lst+(0.5*barPK2), params)
-            barPK4 = dr * self.dbarP_dr(r_lst+dr, barM_lst, barP_lst+barPK3, params)
+            if barP_lst+(0.5*barPK1) >= 0.0:
+                break_loop = False
+                barPK2 = dr * self.dbarP_dr(r_lst+(0.5*dr), 
+                barM_lst, barP_lst+(0.5*barPK1), params)
+            else:
+                break_loop = True
+                break
 
-            barMK1 = dr * self.dbarM_dr(r_lst, barM_lst, barP_lst, params)
-            barMK2 = dr * self.dbarM_dr(r_lst+(0.5*dr), barM_lst+(0.5*barMK1), barP_lst, params)
-            barMK3 = dr * self.dbarM_dr(r_lst+(0.5*dr), barM_lst +(0.5*barMK2), barP_lst, params)
-            barMK4 = dr * self.dbarM_dr(r_lst+dr, barM_lst+barMK3, barP_lst, params)
+            if barP_lst+(0.5*barPK2) >= 0.0:
+                break_loop = False
+                barPK3 = dr * self.dbarP_dr(r_lst+(0.5*dr), 
+                barM_lst, barP_lst+(0.5*barPK2), params)
+            else:
+                break_loop = True
+                break
 
-            barP_nxt = barP_lst + (1.0/6.0)*(barPK1+(2.0*barPK2)+(2.0*barPK3)+barPK4)
+            if barP_lst+barPK3 >= 0.0:
+                break_loop = False
+                barPK4 = dr * self.dbarP_dr(r_lst+dr, 
+                barM_lst, barP_lst+barPK3, params)
+            else:
+                break_loop = True
+                break
 
-            barM_nxt = barM_lst + (1.0/6.0)*(barMK1+(2.0*barMK2)+(2.0*barMK3)+barMK4)
+            # barPK1 = dr * self.dbarP_dr(r_lst, barM_lst, barP_lst, params)
+            # barPK2 = dr * self.dbarP_dr(r_lst+(0.5*dr), barM_lst, barP_lst+(0.5*barPK1), params)
+            # barPK3 = dr * self.dbarP_dr(r_lst+(0.5*dr), barM_lst, barP_lst+(0.5*barPK2), params)
+            # barPK4 = dr * self.dbarP_dr(r_lst+dr, barM_lst, barP_lst+barPK3, params)
+
+            barMK1 = dr * self.dbarM_dr(r_lst, barM_lst,
+            barP_lst, params)
+
+            barMK2 = dr * self.dbarM_dr(r_lst+(0.5*dr), 
+            barM_lst+(0.5*barMK1), barP_lst, params)
+
+            barMK3 = dr * self.dbarM_dr(r_lst+(0.5*dr), 
+            barM_lst +(0.5*barMK2), barP_lst, params)
+
+            barMK4 = dr * self.dbarM_dr(r_lst+dr, 
+            barM_lst+barMK3, barP_lst, params)
+
+            barP_nxt = barP_lst + (1.0/6.0)*(barPK1+(2.0*barPK2)
+            +(2.0*barPK3)+barPK4)
+
+            barM_nxt = barM_lst + (1.0/6.0)*(barMK1+(2.0*barMK2)
+            +(2.0*barMK3)+barMK4)
 
             r_nxt = r_lst + dr
 
-            if barP_nxt.imag == 0.0:
+            if (barP_nxt >= 0.0):
                 self.barP.append(barP_nxt)
                 self.barM.append(barM_nxt)
                 self.r.append(r_nxt)
 
             else:
+                break_loop = True
                 break
 
         #-----------------------------------------------------------------------------------
+        if break_loop == True:
+            print(" > r={:5.4e} barM={:5.4e} barP={:5.4e}".format(self.r[-1],self.barM[-1], self.barP[-1]))
 
-        print(" > r={:5.4e} barM={:5.4e} barP={:5.4e}".format(self.r[-1],self.barM[-1], self.barP[-1]))
+            outfname = "./Output/.barP0_"+str(self.barP[0])+".dat"
+            output = np.array([self.r,self.barM, self.barP])
+            np.savetxt(outfname, output.T, fmt="%6.5e", delimiter="\t")
 
-        outfname = "./Output/.barP0_"+str(self.barP[0])+".dat"
-        output = np.array([self.r,self.barM, self.barP])
-        np.savetxt(outfname, output.T, fmt="%6.5e", delimiter="\t")
+            outdata = [self.r[-1], self.barM[-1], outfname]
 
-        outdata = [self.r[-1], self.barM[-1], outfname]
-
-        return outdata
+            return outdata
 
 #-----------------------------------------------------------------------------------
 
 def main():
 
     barP0s = [
-            5.0e-5, 8.0e-5, 1.0e-4, 5.0e-4, 0.001,0.002, 0.004, 0.008, 0.01, 0.02, 0.04,0.08,0.1,0.50,
-            1.0, 8.0, 16.0, 32.0, 64.0, 100.0, 200.0, 400.0, 800.0, 1.0e3,2.0e3
+        5.0e-5, 8.0e-5, 1.0e-4, 5.0e-4, 0.001,0.002, 0.004, 0.008, 0.01, 0.02, 0.04,0.08,0.1,0.50,
+        1.0, 8.0, 16.0, 32.0, 64.0, 100.0, 200.0, 400.0, 800.0, 1.0e3,2.0e3,
         ]
 
     R = []

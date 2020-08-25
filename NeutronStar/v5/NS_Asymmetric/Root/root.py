@@ -14,7 +14,7 @@ class Function:
 class RootFinder:
     def __init__(self):
         pass
-    
+
     #-----------------------------------------------------------------------------------------------
 
     def NewtonRalphson(self,f, df,f0, x0):
@@ -26,7 +26,7 @@ class RootFinder:
         while run:
             i += 1
             xi = x_last - f(x_last, f0)/df(x_last)
-            
+
             if abs ((xi-x_last)/(x_last+10e-15)) <= 10**-15:
                 run = False
                 return [i, xi]
@@ -34,9 +34,9 @@ class RootFinder:
             x_last = xi
 
     #-----------------------------------------------------------------------------------------------
-    
+
     def Bisection(self, f,f0, a, b):
-        
+
         if abs(f(a, f0)) <= 10e-15:
             return a
 
@@ -44,9 +44,9 @@ class RootFinder:
             return b
 
         if f(a, f0)*f(b, f0) > 0:
-            print("Solution for f0= {:5.4e} is not within [{}, {}]. Try new initial values. ".format(f0,a,b))
+            print("Solution for f = {:5.4e} is not within [{}, {}]. Try new initial values. ".format(f0,a,b))
             exit(1)
-            
+
 
         else:
             i = 0
@@ -56,7 +56,7 @@ class RootFinder:
             while run:
 
                 i += 1
-                
+
                 c = (a+b)/2.0
 
                 if abs((c-c_last)/c) <=10e-20:
@@ -64,7 +64,7 @@ class RootFinder:
 
                 elif f(c, f0)*f(a, f0)<0:
                     b = c
-                
+
                 elif f(c, f0)*f(b, f0)<0:
                     a = c
 

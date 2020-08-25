@@ -22,7 +22,7 @@ class EoSAsymParametric():
             print(" ",item.ljust(left_width, '.')+" | "+'{:8.6e}'.format(value).ljust(rigt_width))
         print("\n")
     #-----------------------------------------------------------------------------------
-        
+
     def get_EoS_params(self):
         EoS_params = {
             "A":self.__A,
@@ -34,5 +34,5 @@ class EoSAsymParametric():
     def barE(self, barP):
         barE = self.__A*barP**(1.0/2.0)
         return barE
-        
+
 #-----------------------------------------------------------------------------------

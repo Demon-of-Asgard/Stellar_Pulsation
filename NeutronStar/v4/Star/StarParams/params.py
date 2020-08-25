@@ -20,7 +20,7 @@ class Params:
         #Model dependent choices.
         self.__A = 2.15
         self.__Z = 1.0
-        self.__alpha_rl = self.__R0
+        self.__alpha_rl = 2.0#self.__R0
         self.__gamma_rl = 4./3.
         self.__gamma_nrl = 5./3.
 
@@ -37,6 +37,17 @@ class Params:
         self.__barP0 = 0.01
         self.__dr = 1.0e-3
         self.__r0 = self.__dr
+
+    #-------------------------------------------------------------
+
+    def get_constants(self):
+        constants = {
+            "pi" : self.__pi,
+            "Ms" : self.__Ms,
+            "c"  : self.__c,
+            "R0" : self.__R0,
+        }
+        return constants
 
     #-------------------------------------------------------------
 

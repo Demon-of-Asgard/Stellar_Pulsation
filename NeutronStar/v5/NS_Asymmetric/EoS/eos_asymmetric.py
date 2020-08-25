@@ -1,8 +1,8 @@
 from StarParams.params import Parameters as Prm
-from Root_finding.Rootfinding import RootFinder as Root
+from Root.root import RootFinder as Root
 #-----------------------------------------------------------------------------------
 
-class EoS_Asym():
+class EoSAsym:
 
     def __init__(self):
 
@@ -24,7 +24,7 @@ class EoS_Asym():
         self.__sigma = 2.112 # dimension less
         self.__alpha = 1.0   # Dimension less
         self.__S0 = 30.0* conv_factors["MEV_TO_ERG"] #[erg]
-        self.__n0 = 0.16/(10**(-13))**3 # [#/(fm^3)] --> [#/(cm^3)] 
+        self.__n0 = 0.16/(10**(-13))**3 # [#/(fm^3)] --> [#/(cm^3)]
         self.__u_lower = 0.0 # u = (n/n0)
         self.__u_upper = 100.0
 
@@ -78,7 +78,7 @@ class EoS_Asym():
         return u
 
     #-----------------------------------------------------------------------------------
-    
+
     def dF_du(self, u):
         return 1.0
 
@@ -91,7 +91,7 @@ class EoS_Asym():
 
 
     def S(self, u):
-       
+
         S = (
             (2.0**(2.0/3.0)-1)*self.__EF0*(u**(2.0/3.0)-self.F(u))
             + self.__S0*self.F(u)
@@ -109,7 +109,7 @@ class EoS_Asym():
         )
 
         return dS2_du
-    
+
     #-----------------------------------------------------------------------------------
 
     def barP(self,u, barP_i=0.0):
@@ -123,8 +123,8 @@ class EoS_Asym():
 
         barP = (P/self.__e0)
 
-        return (barP-barP_i) 
-        
+        return (barP-barP_i)
+
 
     #-----------------------------------------------------------------------------------
 
@@ -133,10 +133,10 @@ class EoS_Asym():
         u = self.get_u(barP)
 
         E = self.__n0*(
-            (self.__eN0*u) 
-            + (self.__EF0*u**(5.0/3.0)) 
-            + ((self.__A/2.0)*u**2) 
-            + ((self.__B/(1+self.__sigma))*u**(1.0+self.__sigma)) 
+            (self.__eN0*u)
+            + (self.__EF0*u**(5.0/3.0))
+            + ((self.__A/2.0)*u**2)
+            + ((self.__B/(1+self.__sigma))*u**(1.0+self.__sigma))
             + self.__alpha**2*u*self.S(u)
         )
 

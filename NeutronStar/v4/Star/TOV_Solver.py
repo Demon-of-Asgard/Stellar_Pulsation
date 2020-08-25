@@ -10,31 +10,31 @@ try:
 
 except ImportError:
     pyplot_import_error = True
-    print("Unable to import matplotlib.pyplot @ TOV_Solver. Make sure that the\
-     package is installed to the current env to use plot module.")
+    print("Unable to import matplotlib.pyplot @ TOV_Solver. Make sure that the \
+     package is installed to the current env.")
 
 #------------------------------------------------------------------------------------------------------------
 
-#from EoS.eos_asymmetric import EoSAsym as EoS
-from EoS.eos_asym_parametric import EoSAsymParametric as EoS
-#from EoS.eos_polytrope import Polytrope as EoS
-from StarParams.params import Parameters as Prm
+#from EoS.EoS_Asym import EoS_Asym as EoS
+#from EoS_parametric.EoS_asym_parametric import EoSAsymParametric as EoS
+from EoS.eos import Eos as EoS
+from StarParams.params import Params as Prm
 from Plot.plot import Plot as Plot
 
 #------------------------------------------------------------------------------------------------------------
 
-class Star:
+class Star():
 
-    barM = []
+    barM  = []
     barP0 = 0.0
-    barP = []
-    r = []
+    barP  = []
+    r  = []
     r0 = 0.0
     dr = 0.0
 
 #------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, barP0=0.0):
+    def __init__(self, barP0):
 
         self.__dr = 1.0e3
         self.__r0 = self.__dr
@@ -44,7 +44,7 @@ class Star:
         self.barM.append(cent_values["barM_init"])
         self.barP.append(barP0)
         self.r.append(self.__r0)
-        self.dr = self.__dr
+        self.dr = self.__dr 
 
         self.print_central_values()
 
@@ -69,7 +69,7 @@ class Star:
         pi = star_params["pi"]
 
         r0 = self.__r0
-        dr =self.__dr
+        dr =self.__dr 
 
 
         '''Value of barM0 for given barP0 according to the EoS'''
@@ -143,10 +143,10 @@ class Star:
         e0 = eosparams["e0"]
         barE   = eosObj.barE(barP)
 
-        f1 = -R0*barM*barE/r**2
+        f1 = -R0*1.0e5*barM*barE/r**2
         f2 = 1.0 +(barP/barE)
         f3 = 1.0 + (4.0*pi*e0/(Ms*c**2))*(r**3)*(barP/barM)
-        f4 = 1.0 - 2.0*R0*(barM/r)
+        f4 = 1.0 - 2.0*R0*1.0e5*(barM/r)
 
         dbarP_dr = f1*f2*f3/f4
 
@@ -163,7 +163,7 @@ class Star:
         hit negative value.
         '''
 
-        outfname = "./Output/.barP0_"+"{:4.4e}".format(self.barP0)+".dat"
+        outfname = "./Output/barP0.dat"
 
         break_loop = False
         i = 0
@@ -180,46 +180,57 @@ class Star:
             '''
             Runge-Kutta implementation.
 
-            The differential eqns. are coupled. Runge-Kutta is implemented
-            here only for one variable at a time per iteration. That is in
-            eachiteration, value of next barP is calculated assuming barM
-            is a  constant  during  that  iteration. Similarely  for other
-            parameters.
+            The differential eqns. are coupled. Runge-Kutta is 
+            implemented here only for one variable at a time per 
+            iteration. That is in each iteration, value of next
+            barP is calculated assuming barM is a constant during 
+            that iteration. Similarely for other parameters.
             '''
 
 
-            barPK1 = dr * self.dbarP_dr(r_lst, barM_lst, barP_lst)
+            barPK1 = dr * self.dbarP_dr(r_lst, barM_lst,
+            barP_lst)
 
             if barP_lst+(0.5*barPK1) >= 0.0:
                 break_loop = False
-                barPK2 = dr * self.dbarP_dr(r_lst+(0.5*dr), barM_lst, barP_lst+(0.5*barPK1))
+                barPK2 = dr * self.dbarP_dr(r_lst+(0.5*dr),
+                barM_lst, barP_lst+(0.5*barPK1))
             else:
                 break_loop = True
                 break
 
             if barP_lst+(0.5*barPK2) >= 0.0:
                 break_loop = False
-                barPK3 = dr * self.dbarP_dr(r_lst+(0.5*dr), barM_lst, barP_lst+(0.5*barPK2))
+                barPK3 = dr * self.dbarP_dr(r_lst+(0.5*dr),
+                     barM_lst, barP_lst+(0.5*barPK2))
             else:
                 break_loop = True
                 break
 
             if barP_lst+barPK3 >= 0.0:
                 break_loop = False
-                barPK4 = dr * self.dbarP_dr(r_lst+dr, barM_lst,barP_lst+barPK3)
+                barPK4 = dr * self.dbarP_dr(r_lst+dr, barM_lst,
+                     barP_lst+barPK3)
             else:
                 break_loop = True
                 break
-            #------------------------------------------------------------------------------------------------------------
 
-            barMK1 = dr * self.dbarM_dr(r_lst, barP_lst, barM_lst)
-            barMK2 = dr * self.dbarM_dr(r_lst+(0.5*dr), barP_lst, barM_lst+(0.5*barMK1))
-            barMK3 = dr * self.dbarM_dr(r_lst+(0.5*dr), barP_lst, barM_lst +(0.5*barMK2))
-            barMK4 = dr * self.dbarM_dr(r_lst+dr, barP_lst, barM_lst+barMK3)
-            #------------------------------------------------------------------------------------------------------------
+            barMK1 = dr * self.dbarM_dr(r_lst, 
+            barP_lst, barM_lst)
 
-            barP_nxt = barP_lst + (1.0/6.0)*(barPK1+(2.0*barPK2)+(2.0*barPK3)+barPK4)
-            barM_nxt = barM_lst + (1.0/6.0)*(barMK1+(2.0*barMK2)+(2.0*barMK3)+barMK4)
+            barMK2 = dr * self.dbarM_dr(r_lst+(0.5*dr), 
+            barP_lst, barM_lst+(0.5*barMK1))
+
+            barMK3 = dr * self.dbarM_dr(r_lst+(0.5*dr), 
+            barP_lst, barM_lst +(0.5*barMK2))
+
+            barMK4 = dr * self.dbarM_dr(r_lst+dr, 
+            barP_lst, barM_lst+barMK3)
+
+            barP_nxt = barP_lst + (1.0/6.0)*(barPK1+(2.0*barPK2)
+            +(2.0*barPK3)+barPK4)
+            barM_nxt = barM_lst + (1.0/6.0)*(barMK1+(2.0*barMK2)
+            +(2.0*barMK3)+barMK4)
 
             r_nxt = r_lst + dr
 
@@ -234,8 +245,7 @@ class Star:
                 break
 
         if break_loop == True:
-                print(" > r={:5.4e} barM={:5.4e} barP={:5.4e}".format(self.r[-1],
-                self.barM[-1], self.barP[-1]))
+                print(" > r={:5.4e} barM={:5.4e} barP={:5.4e}".format(self.r[-1],self.barM[-1], self.barP[-1]))
                 outdata = [self.r[-1], self.barM[-1], outfname]
                 output = np.array([self.r,self.barM, self.barP])
                 outdata = [self.r[-1], self.barM[-1], outfname]
@@ -254,9 +264,9 @@ def main():
     eosObj = EoS()
     prmObj = Prm()
 
-    eosObj.print_EoS_params()
-    prmObj.print_constants()
-    prmObj.print_conv_factors()
+    #eosObj.print_EoS_params()
+    #prmObj.print_constants()
+    #prmObj.print_conv_factors()
 
     print("\n > ",boundary)
 
@@ -267,25 +277,23 @@ def main():
     scale = 5.0
     i = 0
 
-    # for i in range(30):
-    #     us.append(u0*np.exp(-i/scale))
-    #
-    # us = us[::-1]
-    # barP0s = np.array([eosObj.barP(u) for u in us ])
+    for i in range(30):
+        us.append(u0*np.exp(-i/scale))
 
-    barP0s = [5.0e-5, 6.0e-5,]
+    us = us[::-1]
+    #barP0s = np.array([eosObj.barP(u) for u in us ])
+    barP0s = [
+        5.0e-5, 8.0e-5, 1.0e-4, 5.0e-4, 0.001,0.002, 0.004, 0.008, 0.01, 0.02, 0.04,0.08,0.1,0.50,
+        1.0, 8.0, 16.0, 32.0, 64.0, 100.0, 200.0, 400.0, 800.0, 1.0e3,2.0e3,
+        ]
 
-    while barP0s[-1] <= 2.0e3:
-        barP0s.append(barP0s[-2]+barP0s[-1])
-
-    print (len(barP0s))
     R = []
     barM = []
     Nil = []
 
     for barP0 in barP0s:
-        print("\n > barP0: {:8.7e}".format(barP0))
         NS = Star(barP0) # Instance of class NS
+        print("\n > barP0: {:8.7e}".format(barP0))
         print(" --------------------------------------------------\n")
         outdata = NS.TOV_solver() # Build star
 
@@ -299,10 +307,8 @@ def main():
     RVsbarM = np.array([R, barM, Nil])
     RVsbarM_fname = "./Output/RVsbarM.dat"
     np.savetxt(RVsbarM_fname, RVsbarM.T, fmt="%6.5e", delimiter="\t")
-
-    if pyplot_import_error == False:
-        plotObj = Plot()  # Used for plotting
-        plotObj.single_plot(RVsbarM_fname)
+    plotObj = Plot()  # Used for plotting
+    plotObj.single_plot(RVsbarM_fname)
 
     print("\n > ",boundary)
 
