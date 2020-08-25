@@ -23,27 +23,18 @@ from Plot.plot import Plot as Plot
 
 #------------------------------------------------------------------------------------------------------------
 
-class Star:
-
-    barM = []
-    barP0 = 0.0
-    barP = []
-    r = []
-    r0 = 0.0
-    dr = 0.0
-
-#------------------------------------------------------------------------------------------------------------
-
+class Star(EoS):
+    ''' Class representing Star with EoS.'''
     def __init__(self, barP0=0.0):
+        super().__init__()
 
         self.__dr = 1.0e3
         self.__r0 = self.__dr
-
         self.barP0 = barP0
         cent_values = self.get_star_central_values() #Central values of the star.
-        self.barM.append(cent_values["barM_init"])
-        self.barP.append(barP0)
-        self.r.append(self.__r0)
+        self.barM_r = [cent_values["barM_init"]]
+        self.barP_r = [barP0]
+        self.r = [self.__r0]
         self.dr = self.__dr
 
         self.print_central_values()
@@ -61,8 +52,8 @@ class Star:
 
         prmObj = Prm()
         star_params = prmObj.get_constants()
-        eosObj = EoS()
-        EoS_params = eosObj.get_EoS_params()
+
+        EoS_params = self.get_EoS_params()
 
         Ms = star_params["Ms"]
         c  = star_params["c"]
@@ -73,7 +64,7 @@ class Star:
 
 
         '''Value of barM0 for given barP0 according to the EoS'''
-        barM0 = (4.*pi*EoS_params["e0"]/(3.*Ms*c**2))*r0**3.*eosObj.barE(self.barP0)
+        barM0 = (4.*pi*EoS_params["e0"]/(3.*Ms*c**2))*r0**3.*self.barE(self.barP0)
 
         star_central_vals = {
             "r0":r0,
@@ -100,12 +91,11 @@ class Star:
 
 #------------------------------------------------------------------------------------------------------------
 
-    def dbarM_dr(self, r, barP, barM):
+    def dbarM_dr(self, r_i, barP_i, barM_i):
         '''
         RHS of the mass balance equation in the TOV eqns.
         '''
 
-        eosObj = EoS()
         prmObj = Prm()
         params = prmObj.get_constants()
 
@@ -113,24 +103,22 @@ class Star:
         c  = params["c"]
         pi = params["pi"]
 
-        eosparams = eosObj.get_EoS_params()
+        eosparams = self.get_EoS_params()
         e0 = eosparams["e0"]
 
-        barE = eosObj.barE(barP)
+        barE = self.barE(barP_i)
 
-        dbarMdr = (4.0*pi*e0/(Ms*c**2))*(r**2.0*barE)
+        dbarMdr = (4.0*pi*e0/(Ms*c**2))*(r_i**2.0*barE)
 
         return dbarMdr
 
 #------------------------------------------------------------------------------------------------------------
 
-    def dbarP_dr(self, r, barM, barP):
+    def dbarP_dr(self, r_i, barM_i, barP_i):
         '''
         RHS of the force balance eqn in the TOV eqns.
         '''
-        eosObj  = EoS()
         prmObj  = Prm()
-
         params  = prmObj.get_constants()
 
         R0 = params["R0"]
@@ -138,15 +126,15 @@ class Star:
         c  = params["c"]
         Ms = params["Ms"]
 
-        eosObj = EoS()
-        eosparams = eosObj.get_EoS_params()
+       
+        eosparams = self.get_EoS_params()
         e0 = eosparams["e0"]
-        barE   = eosObj.barE(barP)
+        barE   = self.barE(barP_i)
 
-        f1 = -R0*barM*barE/r**2
-        f2 = 1.0 +(barP/barE)
-        f3 = 1.0 + (4.0*pi*e0/(Ms*c**2))*(r**3)*(barP/barM)
-        f4 = 1.0 - 2.0*R0*(barM/r)
+        f1 = -R0*barM_i*barE/r_i**2
+        f2 = 1.0 +(barP_i/barE)
+        f3 = 1.0 + (4.0*pi*e0/(Ms*c**2))*(r_i**3)*(barP_i/barM_i)
+        f4 = 1.0 - 2.0*R0*(barM_i/r_i)
 
         dbarP_dr = f1*f2*f3/f4
 
@@ -158,9 +146,9 @@ class Star:
     def TOV_solver(self):
 
         '''
-        Estimate the next value of bar P, barM and r by solving TOV eqns
-        using simple Euler method. The iteration of the while-loop terminates when barP
-        hit negative value.
+        Estimate the next value of bar P, barM and r by solving TOV 
+        eqns  using Runge-Kutta method. The iteration of the while
+        loop terminates when barP hit negative value.
         '''
 
         outfname = "./Output/.barP0_"+"{:4.4e}".format(self.barP0)+".dat"
@@ -174,19 +162,18 @@ class Star:
             i += 1
 
             r_lst = self.r[-1]
-            barM_lst = self.barM[-1]
-            barP_lst = self.barP[-1]
+            barM_lst = self.barM_r[-1]
+            barP_lst = self.barP_r[-1]
 
             '''
             Runge-Kutta implementation.
 
             The differential eqns. are coupled. Runge-Kutta is implemented
             here only for one variable at a time per iteration. That is in
-            eachiteration, value of next barP is calculated assuming barM
+            eachiteration, value of next barP is calculated  assuming barM
             is a  constant  during  that  iteration. Similarely  for other
             parameters.
             '''
-
 
             barPK1 = dr * self.dbarP_dr(r_lst, barM_lst, barP_lst)
 
@@ -225,8 +212,8 @@ class Star:
 
             if (barP_nxt >= 0):
                 break_loop = False
-                self.barP.append(barP_nxt)
-                self.barM.append(barM_nxt)
+                self.barP_r.append(barP_nxt)
+                self.barM_r.append(barM_nxt)
                 self.r.append(r_nxt)
 
             else:
@@ -235,10 +222,10 @@ class Star:
 
         if break_loop == True:
                 print(" > r={:5.4e} barM={:5.4e} barP={:5.4e}".format(self.r[-1],
-                self.barM[-1], self.barP[-1]))
-                outdata = [self.r[-1], self.barM[-1], outfname]
-                output = np.array([self.r,self.barM, self.barP])
-                outdata = [self.r[-1], self.barM[-1], outfname]
+                self.barM_r[-1], self.barP_r[-1]))
+                outdata = [self.r[-1], self.barM_r[-1], outfname]
+                output = np.array([self.r,self.barM_r, self.barP_r])
+                outdata = [self.r[-1], self.barM_r[-1], outfname]
                 np.savetxt(outfname, output.T, fmt="%6.5e", delimiter="\t")
                 return outdata
 
@@ -262,23 +249,22 @@ def main():
 
     #------------------------------------------------------------------------------------------------------------
 
-    us = []
-    u0 = 20.0
-    scale = 5.0
-    i = 0
+    # us = []
+    # u0 = 20.0
+    # scale = 5.0
+    # i = 0
 
     # for i in range(30):
     #     us.append(u0*np.exp(-i/scale))
     #
     # us = us[::-1]
-    # barP0s = np.array([eosObj.barP(u) for u in us ])
+    # barP0s = np.array([self.barP(u) for u in us ])
 
     barP0s = [5.0e-5, 6.0e-5,]
 
     while barP0s[-1] <= 2.0e3:
         barP0s.append(barP0s[-2]+barP0s[-1])
 
-    print (len(barP0s))
     R = []
     barM = []
     Nil = []

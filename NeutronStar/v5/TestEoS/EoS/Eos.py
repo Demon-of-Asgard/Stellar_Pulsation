@@ -10,7 +10,7 @@ class EoS_Asym:
         self.__A  = -118.2 # MeV
         self.__B  = 65.39 # MeV
         self.__sigma = 2.112 # dimension less
-        self.__alpha = 1.0   # Dimension less
+        self.__alpha = 0.90   # Dimension less
         self.__S0  = 30.0
         self.__EF0 =  22.1 # MeV
         self.__n0  = 0.16#122.346e4 # MeV^4

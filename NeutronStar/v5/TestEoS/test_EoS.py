@@ -32,10 +32,10 @@ class Plot:
             "salmon": "#FA8072",
         }
 
-        plt.plot(
-            u_list, E, color = color["royal_blue"], linestyle = ls,
-            linewidth = lw, label = "E"
-            )
+        # plt.plot(
+        #     u_list, E, color = color["royal_blue"], linestyle = ls,
+        #     linewidth = lw, label = "E"
+        #     )
 
         plt.plot(
             u_list, P, color = color["salmon"], linestyle = ls,
@@ -62,7 +62,7 @@ class Plot:
 
 def main():
 
-    u_list = np.arange(0.010,10.001, 0.001)
+    u_list = np.arange(0.010,2.001, 0.0001)
     _EoS_obj = EoS()
 
     E = []

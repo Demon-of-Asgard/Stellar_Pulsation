@@ -3,7 +3,6 @@ from Root.root import RootFinder as Root
 #-----------------------------------------------------------------------------------
 
 class EoSAsym:
-
     def __init__(self):
 
         prmObj = Prm()
@@ -22,11 +21,11 @@ class EoSAsym:
         self.__A = 118.2 * conv_factors["MEV_TO_ERG"] # A[MeV] --> A[erg]
         self.__B = 65.39 * conv_factors["MEV_TO_ERG"] # B[MeV] --> B[erg]
         self.__sigma = 2.112 # dimension less
-        self.__alpha = 1.0   # Dimension less
+        self.__alpha = 0.0   # Dimension less
         self.__S0 = 30.0* conv_factors["MEV_TO_ERG"] #[erg]
         self.__n0 = 0.16/(10**(-13))**3 # [#/(fm^3)] --> [#/(cm^3)]
-        self.__u_lower = 0.0 # u = (n/n0)
-        self.__u_upper = 100.0
+        self.u_lower = 0.0 # u = (n/n0)
+        self.u_upper = 100.0
 
         self.__e0 = self.__mN**4*self.__c**5/(3.*self.__pi**2*self.__hbar**3) # [erg/cm^-3] # This quantity is arbitrary
         self.__EF0 = (
@@ -69,7 +68,7 @@ class EoSAsym:
 
     def get_u(self,barP_i):
         rootObj = Root()
-        u = rootObj.Bisection(self.barP, barP_i, self.__u_lower, self.__u_upper)
+        u = rootObj.Bisection(self.barP, barP_i, self.u_lower, self.u_upper)
         return u
 
     #-----------------------------------------------------------------------------------
@@ -128,9 +127,9 @@ class EoSAsym:
 
     #-----------------------------------------------------------------------------------
 
-    def barE(self, barP):
+    def barE(self, barP_i):
 
-        u = self.get_u(barP)
+        u = self.get_u(barP_i)
 
         E = self.__n0*(
             (self.__eN0*u)
